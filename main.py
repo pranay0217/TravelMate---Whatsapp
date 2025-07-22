@@ -72,8 +72,6 @@ async def whatsapp_webhook(
         except Exception as e:
             print("Failed to send welcome message:", e)
 
-        return "OK"
-
     # Maintain session per user
     session_id = From
     if session_id not in session_memories:
@@ -118,8 +116,6 @@ async def whatsapp_webhook(
             print(f"Sent normal message SID: {message.sid}")
         except Exception as e:
             print("Failed to send fallback message:", e)
-
-    return "OK"
 
 if __name__ == "__main__":
     import uvicorn
