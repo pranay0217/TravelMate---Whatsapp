@@ -44,9 +44,9 @@ async def whatsapp_webhook(
     Body: str = Form(...),
     From: str = Form(...)
 ):
-    print(f"[{From}] {Body}")
+    print(f"\n--- New message from {From} ---")
+    print(f"User: {Body.strip()}")
 
-    # Normalize the message
     user_input = Body.strip().lower()
 
     # Greeting intent check
@@ -68,9 +68,10 @@ async def whatsapp_webhook(
                 body=welcome_msg,
                 to=From
             )
-            print(f"Sent welcome message SID: {message.sid}")
+            print(f"Bot: {welcome_msg}")
+            print(f"✅ Sent welcome message SID: {message.sid}")
         except Exception as e:
-            print("Failed to send welcome message:", e)
+            print("❌ Failed to send welcome message:", e)
 
     # Maintain session per user
     session_id = From
@@ -90,8 +91,9 @@ async def whatsapp_webhook(
 
     # Run the conversation chain
     gemini_response = chain.run(user_input)
+    print(f"Bot: {gemini_response}")
 
-    # Simple logic to trigger a template message (customize as needed)
+    # Sample condition for sending a template
     date = "12/1"
     time = "3pm"
 
@@ -99,13 +101,13 @@ async def whatsapp_webhook(
         try:
             message = client.messages.create(
                 from_=twilio_whatsapp_number,
-                content_sid="HXb5b62575e6e4ff6129ad7c8efe1f983e",  # Replace with real content SID
+                content_sid="HXb5b62575e6e4ff6129ad7c8efe1f983e",  # Replace with actual SID
                 content_variables=f'{{"1":"{date}","2":"{time}"}}',
                 to=From
             )
-            print(f"Sent template message SID: {message.sid}")
+            print(f"✅ Sent template message SID: {message.sid}")
         except Exception as e:
-            print("Failed to send template message:", e)
+            print("❌ Failed to send template message:", e)
     else:
         try:
             message = client.messages.create(
@@ -113,9 +115,10 @@ async def whatsapp_webhook(
                 body=gemini_response,
                 to=From
             )
-            print(f"Sent normal message SID: {message.sid}")
+            print(f"✅ Sent normal message SID: {message.sid}")
         except Exception as e:
-            print("Failed to send fallback message:", e)
+            print("❌ Failed to send fallback message:", e)
+
 
 if __name__ == "__main__":
     import uvicorn
